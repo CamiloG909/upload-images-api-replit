@@ -1,16 +1,13 @@
 const express = require('express');
 const app = express();
+const cors = require('cors');
 const morgan = require('morgan');
-const connectDb = require('./utils/db.js')
 
+app.use(cors());
 app.use(express.json());
 app.use(morgan('dev'));
-connectDb();
 
-app.get('/', (req,res) => {
-	res.json({
-		message: 'Welcome'
-	})
-});
+app.use(require('./routes/index.routes.js'));
+app.use(require('./routes/products.routes.js'));
 
 module.exports = app;
