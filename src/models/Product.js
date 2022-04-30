@@ -5,7 +5,6 @@ const Product = new Schema({
 		type: String,
 		required: true,
 		trim: true,
-		unique: true
 	},
 	description: {
 		type: String,
@@ -14,6 +13,10 @@ const Product = new Schema({
 	price: {
 		type: Number,
 		default: 0
+	},
+	image: {
+		public_id: String,
+		secure_url: String
 	}
 },{
 	versionKey: false,

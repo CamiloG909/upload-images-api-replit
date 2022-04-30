@@ -1,5 +1,7 @@
 const productsCtrl = {};
 const Product = require('../models/Product.js');
+const {uploadImage, deleteImage} = require('../utils/cloudinary.js');
+const fs = require('fs-extra');
 
 productsCtrl.getProducts = async (req, res) => {
 	try {
@@ -33,6 +35,16 @@ productsCtrl.newProduct =	async (req, res) => {
 			description,
 			price,
 		});
+
+		if(req.files?.image) {
+			const { public_id, secure_url } = await uploadImage(req.files.image.tempFilePath);
+			product.image = {
+				public_id,
+				secure_url,
+			}
+
+			await fs.unlink(req.files.image.tempFilePath);
+		}
 
 		await product.save();
 	
@@ -79,6 +91,8 @@ productsCtrl.deleteProduct = async (req, res) => {
 		const product = await Product.findByIdAndDelete(id);
 
 		if(!product) return res.status(404).json({ message: 'Product not found' });
+
+		if(product.image?.public_id) await deleteImage(product.image.public_id);
 		
 		res.status(200).json({
 			message: 'Deleted product successfully',
